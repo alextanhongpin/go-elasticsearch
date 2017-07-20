@@ -114,21 +114,21 @@ job "search" {
     #
     #     https://www.nomadproject.io/docs/job-specification/ephemeral_disk.html
     #
-    ephemeral_disk {
-      # When sticky is true and the task group is updated, the scheduler
-      # will prefer to place the updated allocation on the same node and
-      # will migrate the data. This is useful for tasks that store data
-      # that should persist across allocation updates.
-      # sticky = true
-      # 
-      # Setting migrate to true results in the allocation directory of a
-      # sticky allocation directory to be migrated.
-      # migrate = true
+    // ephemeral_disk {
+    //   # When sticky is true and the task group is updated, the scheduler
+    //   # will prefer to place the updated allocation on the same node and
+    //   # will migrate the data. This is useful for tasks that store data
+    //   # that should persist across allocation updates.
+    //   # sticky = true
+    //   # 
+    //   # Setting migrate to true results in the allocation directory of a
+    //   # sticky allocation directory to be migrated.
+    //   # migrate = true
 
-      # The "size" parameter specifies the size in MB of shared ephemeral disk
-      # between tasks in the group.
-      size = 300
-    }
+    //   # The "size" parameter specifies the size in MB of shared ephemeral disk
+    //   # between tasks in the group.
+    //   size = 300
+    // }
 
     # The "task" stanza creates an individual unit of work, such as a Docker
     # container, web application, or batch processing.
@@ -150,10 +150,23 @@ job "search" {
       config {
         image = "docker.elastic.co/elasticsearch/elasticsearch:5.4.3"
         port_map {
-          db = 9200
+          http = 9200
+          tcp = 9300
         }
-      }
 
+        # command = 
+
+        // args = [
+        //   "bootstrap.memory_lock", "true",
+        //   "ES_JAVA_OPTS", "-Xms512m -Xmx512m",
+        //   "cluster.name", "docker-cluster"
+        // ]
+      }
+      env {
+        "bootstrap.memory_lock" = "true"
+        "ES_JAVA_OPTS" = "-Xms1g -Xmx1g"
+        "cluster.name" = "docker-cluster"
+      }
       # The "artifact" stanza instructs Nomad to download an artifact from a
       # remote source prior to starting the task. This provides a convenient
       # mechanism for downloading configuration files or data needed to run the
@@ -198,11 +211,13 @@ job "search" {
       #     https://www.nomadproject.io/docs/job-specification/resources.html
       #
       resources {
-        // cpu    = 500 # 500 MHz
-        // memory = 256 # 256MB
+        cpu    = 1000 # 500 MHz
+        memory = 1024 # 256MB
+        disk = 512
         network {
-          # mbits = 10
-          port "db" {}
+          mbits = 10
+          port "http" {}
+          port "tcp" {}
         }
       }
 
