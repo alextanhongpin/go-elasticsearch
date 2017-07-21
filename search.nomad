@@ -163,9 +163,9 @@ job "search" {
         // ]
       }
       env {
-        "bootstrap.memory_lock" = "true"
-        "ES_JAVA_OPTS" = "-Xms1g -Xmx1g"
-        "cluster.name" = "docker-cluster"
+        bootstrap.memory_lock = "true"
+        ES_JAVA_OPTS = "-Xms512m -Xmx512m"
+        cluster.name = "docker-cluster"
       }
       # The "artifact" stanza instructs Nomad to download an artifact from a
       # remote source prior to starting the task. This provides a convenient
@@ -211,8 +211,8 @@ job "search" {
       #     https://www.nomadproject.io/docs/job-specification/resources.html
       #
       resources {
-        cpu    = 1000 # 500 MHz
-        memory = 1024 # 256MB
+        cpu    = 1000 # 1000 MHz
+        memory = 1024 # 1024MB
         disk = 512
         network {
           mbits = 10
