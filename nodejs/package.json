@@ -1,0 +1,15 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "alextanhongpin <alextan220990@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "consul": "^0.29.0",
+    "elasticsearch": "^13.2.0"
+  }
+}

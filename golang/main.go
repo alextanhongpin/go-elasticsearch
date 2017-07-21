@@ -4,12 +4,14 @@ import (
 	"context"
 	"log"
 
+	"github.com/alextanhongpin/go-elasticsearch/golang/elasticsearch"
+
 	elastic "gopkg.in/olivere/elastic.v5"
 )
 
 // Env defines our environment variables
 type Env struct {
-	Host  string
+	Hosts []string
 	Index string
 	Type  string
 }
@@ -23,9 +25,18 @@ type Person struct {
 func main() {
 	data := []Person{}
 	ctx := context.Background()
+	esClient, err := elasticsearch.MakeClient()
+	if err != nil {
+		panic(err)
+	}
 
+	hosts, err := esClient.Service("global-elastichsearch-check", "search")
+	if err != nil {
+		panic(err)
+	}
+	log.Println("connecting to host", hosts)
 	env := Env{
-		Host:  "localhost:9200",
+		Hosts: hosts,
 		Index: "index",
 	}
 
@@ -33,8 +44,9 @@ func main() {
 	LIMIT := 5000
 
 	client, err := elastic.NewClient(
-		elastic.SetURL(env.Host),
+		elastic.SetURL(env.Hosts...),
 		elastic.SetSniff(false),
+		elastic.SetBasicAuth("elastic", "changeme"),
 	)
 	if err != nil {
 		panic(err)
@@ -78,3 +90,31 @@ func min(a, b int) int {
 	}
 	return a
 }
+
+// func endpoints() []string {
+// 	var endpoints []string
+// 	config := consul.DefaultConfig()
+// 	// config.Address = "localhost:8500"
+// 	c, err := consul.NewClient(config)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	addrs, meta, err := c.Health().Service("global-elastichsearch-check", "search", true, nil)
+
+// 	if len(addrs) == 0 && err == nil {
+// 		log.Println("Service not found")
+// 		return endpoints
+// 	}
+// 	if err != nil {
+// 		log.Println(err)
+// 		return endpoints
+// 	}
+// 	log.Println(meta)
+// 	for _, v := range addrs {
+// 		log.Printf("%#v", v.Service)
+// 		log.Printf("%#v", v.Service.Address)
+// 		log.Printf("%#v", v.Service.Port)
+// 		endpoints = append(endpoints, "http://"+v.Service.Address+":"+strconv.Itoa(v.Service.Port))
+// 	}
+// 	return endpoints
+// }

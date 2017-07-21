@@ -231,17 +231,17 @@ job "search" {
       #
       #     https://www.nomadproject.io/docs/job-specification/service.html
       #
-      // service {
-      //   name = "global-redis-check"
-      //   tags = ["global", "cache"]
-      //   port = "db"
-      //   check {
-      //     name     = "alive"
-      //     type     = "tcp"
-      //     interval = "10s"
-      //     timeout  = "2s"
-      //   }
-      // }
+      service {
+        name = "global-elastichsearch-check"
+        tags = ["global", "search"]
+        port = "http"
+        check {
+          name     = "alive"
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
 
       # The "template" stanza instructs Nomad to manage a template, such as
       # a configuration file or script. This template can optionally pull data
