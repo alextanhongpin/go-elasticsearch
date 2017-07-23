@@ -28,14 +28,15 @@ job "search" {
         }
       }
       env {
-        NOMAD_ENABLE = "1"
-        # http.host = "0.0.0.0"
-        NOMAD_PORT_http = "0.0.0.0:3000"
-        CONSUL_BIND_INTERFACE = "eth0"
-        # nomad.enable = "true"
-        # CONSUL_ENABLE = 1
-        # Default nomad port is 4646
-        NOMAD_ADDR = "http://127.0.0.1:4646"
+        NOMAD_ENABLE = 1
+        NOMAD_ADDR = "http://docker.for.mac.localhost:4646"
+        // NOMAD_LOG_LEVEL = "debug"
+        // NOMAD_READ_ONLY = "false"
+        // PROXY_ADDRESS   = "/hashi-ui"
+
+        // CONSUL_ENABLE    = "true"
+        // CONSUL_ADDR      = "169.254.1.1:8500"
+        // CONSUL_READ_ONLY = "true"
       }
       resources {
         # 1000 MHz
@@ -50,6 +51,31 @@ job "search" {
         }
       }
     }
+    // task "hashi-ui" {
+    //   driver = "raw_exec"
+    //   # TODO: Find out where nomad download the artifact
+    //   // artifact {
+    //   //   source      = "https://github.com/jippi/hashi-ui/releases/download/v0.13.6/hashi-ui-darwin-amd64"
+    //   //   destination = "./local/dir"
+    //   // }
+    //   config {
+    //     # Path must be absolute
+    //     command = "/Users/alextanhongpin/Documents/golang/src/github.com/alextanhongpin/go-elasticsearch/hashi-ui-darwin-amd64"
+    //     args = ["--nomad-enable", "--consul-enable"]
+    //   }
+    //   resources {
+    //     # 1000 MHz
+    //     cpu = 1000
+    //     # 512 MB
+    //     disk = 512
+    //     # 1024 MB
+    //     memory = 1024
+    //     network {
+    //       mbits = 10
+    //       port "http" {}
+    //     }
+    //   }
+    // }
     task "elasticsearch" {
       driver = "docker"
       config {
