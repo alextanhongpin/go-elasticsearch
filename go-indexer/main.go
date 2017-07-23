@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"log"
+	"strconv"
 
-	"github.com/alextanhongpin/go-elasticsearch/golang/elasticsearch"
+	"github.com/alextanhongpin/go-elasticsearch/go-indexer/elasticsearch"
 
 	elastic "gopkg.in/olivere/elastic.v5"
 )
@@ -18,12 +19,16 @@ type Env struct {
 
 // Person defines the document we want to index to ElasticSearch
 type Person struct {
-	Name string
-	ID   int
+	Name string `json:"name"`
+	ID   int    `json:"id"`
 }
 
 func main() {
-	data := []Person{}
+	data := []Person{
+		Person{"john", 1},
+		Person{"doe", 2},
+		Person{"john", 3},
+	}
 	ctx := context.Background()
 	esClient, err := elasticsearch.MakeClient()
 	if err != nil {
@@ -38,6 +43,7 @@ func main() {
 	env := Env{
 		Hosts: hosts,
 		Index: "index",
+		Type:  "Person",
 	}
 
 	// Index maximum of 5k documents at a time
@@ -67,7 +73,7 @@ func main() {
 			req := elastic.NewBulkIndexRequest().
 				Index(env.Index).
 				Type(env.Type).
-				Id("string_id").
+				Id(strconv.Itoa(item.ID)).
 				Doc(item)
 			bulkRequest = bulkRequest.Add(req)
 		}
@@ -82,6 +88,7 @@ func main() {
 			log.Println("Done indexing for index:", i/LIMIT)
 		}
 	}
+	log.Printf("Done indexing %d item", dataLen)
 }
 
 func min(a, b int) int {
@@ -90,31 +97,3 @@ func min(a, b int) int {
 	}
 	return a
 }
-
-// func endpoints() []string {
-// 	var endpoints []string
-// 	config := consul.DefaultConfig()
-// 	// config.Address = "localhost:8500"
-// 	c, err := consul.NewClient(config)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	addrs, meta, err := c.Health().Service("global-elastichsearch-check", "search", true, nil)
-
-// 	if len(addrs) == 0 && err == nil {
-// 		log.Println("Service not found")
-// 		return endpoints
-// 	}
-// 	if err != nil {
-// 		log.Println(err)
-// 		return endpoints
-// 	}
-// 	log.Println(meta)
-// 	for _, v := range addrs {
-// 		log.Printf("%#v", v.Service)
-// 		log.Printf("%#v", v.Service.Address)
-// 		log.Printf("%#v", v.Service.Port)
-// 		endpoints = append(endpoints, "http://"+v.Service.Address+":"+strconv.Itoa(v.Service.Port))
-// 	}
-// 	return endpoints
-// }
